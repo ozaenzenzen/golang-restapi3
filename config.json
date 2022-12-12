@@ -1,0 +1,4 @@
+{
+    "connection_string": "root:@/golangrestapi1",
+    "port": 10000
+}
