@@ -18,23 +18,46 @@ func CreateProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetProductById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var product entities.Product
+	var listProductTemp []entities.Product
+	var productResponse entities.ProductResponse
+
 	productId := mux.Vars(r)["id"]
+
 	if checkIfProductExists(productId) == false {
-		json.NewEncoder(w).Encode("Product Not Found")
+		listProductTemp = append(listProductTemp, product)
+		productResponse.Status = 200
+		productResponse.Message = "success"
+		productResponse.Data = []entities.Product{}
+
+		// json.NewEncoder(w).Encode("Product Not Found")
+		json.NewEncoder(w).Encode(productResponse)
 		return
 	}
-	var product entities.Product
+
 	database.Instance.First(&product, productId)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(product)
+
+	listProductTemp = append(listProductTemp, product)
+	productResponse.Status = 200
+	productResponse.Message = "success"
+	productResponse.Data = listProductTemp
+
+	json.NewEncoder(w).Encode(productResponse)
 
 }
 func GetProducts(w http.ResponseWriter, r *http.Request) {
 	var products []entities.Product
+	var productResponse entities.ProductResponse
+
 	database.Instance.Find(&products)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(products)
+	productResponse.Status = 200
+	productResponse.Message = "success"
+	productResponse.Data = products
+	json.NewEncoder(w).Encode(productResponse)
 }
 func DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
